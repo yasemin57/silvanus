@@ -12,11 +12,12 @@ use App\Http\Controllers\Api\SensorController;
 use App\Http\Controllers\Api\StationController;
 use App\Http\Controllers\Api\SystemHealthController;
 use Illuminate\Support\Facades\Route;
-
 Route::prefix('v1')->group(function () {
     // Authentication
     Route::post('/auth/login', [AuthController::class, 'login']);
-
+    Route::get('/sensor-data', [SensorController::class, 'index']);
+    Route::post('/sensor-data', [SensorController::class, 'store']);
+    Route::get('/sensor-data/latest', [SensorController::class, 'latest']);
     // Public / Shared Live Feed Routes (Map & Health)
     Route::get('/map/elements', [MapController::class, 'elements']);
     Route::get('/system/health', [SystemHealthController::class, 'index']);

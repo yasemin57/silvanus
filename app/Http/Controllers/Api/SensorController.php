@@ -1,50 +1,79 @@
 <?php
 
-declare(strict_types=1);
-
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
-use App\Models\Sensor;
-use Illuminate\Http\JsonResponse;
+use App\Models\SensorData;
 use Illuminate\Http\Request;
 
 class SensorController extends Controller
 {
-    public function index(Request $request): JsonResponse
+    // Web paneli (React/Dashboard) tüm sensör geçmişini ve sayaçları buradan çeker
+    public function index()
     {
-        $query = Sensor::query()->with('latestReading');
-
-        if ($request->filled('zone_name')) {
-            $query->where('zone_name', $request->string('zone_name'));
-        }
-
-        if ($request->filled('status')) {
-            $query->where('status', $request->string('status'));
-        }
-
-        $sensors = $query->paginate($request->integer('per_page', 50));
+        $data = SensorData::latest()->get();
+        $latest = $data->first();
 
         return response()->json([
-            'success' => true,
-            'data' => $sensors->items(),
-            'meta' => [
-                'current_page' => $sensors->currentPage(),
-                'last_page' => $sensors->lastPage(),
-                'total' => $sensors->total(),
-            ],
+            'status' => 'success',
+            'total_sensors' => $data->count() > 0 ? 1 : 0, // Aktif sensör düğüm sayısı
+            'latest' => $latest,
+            'data' => $data
         ]);
     }
 
-    public function show(int $id): JsonResponse
+    public function store(Request $request)
     {
-        $sensor = Sensor::query()
-            ->with(['readings' => fn ($q) => $q->latest('recorded_at')->limit(30)])
-            ->findOrFail($id);
+        $validated = $request->validate([
+            'temperature' => 'nullable|numeric',
+            'humidity'    => 'nullable|numeric',
+            'gas_level'   => 'nullable|integer',
+        ]);
+
+        $data = SensorData::create([
+            'temperature' => $request->temperature,
+            'humidity'    => $request->humidity,
+            'gas_level'   => $request->gas_level,
+        ]);
 
         return response()->json([
-            'success' => true,
-            'data' => $sensor,
+            'status'  => 'success',
+            'message' => 'Sensör verisi kaydedildi.',
+            'data'    => $data
+        ], 201);
+    }
+
+    public function latest()
+    {
+        $latest = SensorData::latest()->first();
+
+        if (!$latest) {
+            return response()->json([
+                'status' => 'success',
+                'temperature' => 0,
+                'humidity' => 0,
+                'gas_level' => 0,
+                'data' => [
+                    'temperature' => 0,
+                    'humidity' => 0,
+                    'gas_level' => 0,
+                    'created_at' => null
+                ]
+            ]);
+        }
+
+        return response()->json([
+            'status' => 'success',
+            // Hem doğrudan kök dizinde hem 'data' içinde dönerek tüm frontend formatlarını destekliyoruz
+            'temperature' => $latest->temperature,
+            'humidity' => $latest->humidity,
+            'gas_level' => $latest->gas_level,
+            'data' => [
+                'temperature' => $latest->temperature,
+                'humidity' => $latest->humidity,
+                'gas_level' => $latest->gas_level,
+                'created_at' => $latest->created_at ? $latest->created_at->format('Y-m-d H:i:s') : null
+            ]
         ]);
     }
 }

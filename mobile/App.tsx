@@ -5,7 +5,7 @@ import { RootNavigator } from './src/navigation/RootNavigator';
 import { offlineStorage } from './src/services/offlineStorage';
 import { pushNotificationService } from './src/services/pushNotification';
 import { User } from './src/types';
-
+import { API_URL, CAMERA_STREAM_URL } from './config';
 export const navigationRef = createNavigationContainerRef<any>();
 
 export default function App() {

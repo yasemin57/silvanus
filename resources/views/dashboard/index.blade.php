@@ -95,7 +95,7 @@
     <!-- Main Live Command Center (Map & Active Fire Focus) -->
     <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
 
-        <!-- Interactive Google / Leaflet Map (Col 8) -->
+        <!-- Interactive Map (Col 8) -->
         <div class="lg:col-span-8 flex flex-col space-y-3">
             <div class="glass-panel p-4 rounded-2xl flex-1 flex flex-col">
                 <div class="flex items-center justify-between mb-3">
@@ -147,8 +147,29 @@
             </div>
         </div>
 
-        <!-- Active Incident Spotlight & Lifecycle Panel (Col 4) -->
+        <!-- Active Incident Spotlight & Live Camera Panel (Col 4) -->
         <div class="lg:col-span-4 flex flex-col space-y-4">
+
+            <!-- Canlı Raspberry Pi 5 Kamera Kartı (Her Zaman Görünür) -->
+            <div class="glass-panel p-4 rounded-2xl">
+                <div class="flex items-center justify-between mb-3">
+                    <div class="flex items-center space-x-2">
+                        <span class="w-2.5 h-2.5 rounded-full bg-rose-500 animate-ping"></span>
+                        <h3 class="text-sm font-bold text-white">Canlı Kamera & YOLOv8 Tespit</h3>
+                    </div>
+                    <span class="text-[10px] bg-rose-600/90 text-white font-bold px-2 py-0.5 rounded">RPi5 - CANLI</span>
+                </div>
+                <div class="relative rounded-xl overflow-hidden border border-slate-800 bg-black h-48">
+                    <img 
+                        src="http://192.168.137.153:5000/video_feed" 
+                        alt="Canlı Termal Kamera Akışı" 
+                        class="w-full h-full object-cover"
+                        crossorigin="anonymous"
+                    />
+                </div>
+            </div>
+
+            <!-- Olay Durumu -->
             @if($latestCritical)
                 <div class="glass-panel-glow p-5 rounded-2xl flex-1 flex flex-col justify-between">
                     <div>
@@ -205,18 +226,6 @@
                             </div>
                         </div>
 
-                        <!-- Camera Preview -->
-                        <div class="relative rounded-xl overflow-hidden border border-slate-800 my-3 group">
-                            <img src="https://images.unsplash.com/photo-1516214104703-d870798883c5?w=600" alt="Camera Stream" class="w-full h-32 object-cover">
-                            <div class="absolute inset-0 bg-gradient-to-t from-slate-950 via-transparent to-transparent flex items-end justify-between p-2.5">
-                                <div class="flex items-center space-x-1.5">
-                                    <span class="w-2 h-2 rounded-full bg-rose-500 animate-ping"></span>
-                                    <span class="text-[10px] font-mono font-bold text-white bg-slate-900/80 px-2 py-0.5 rounded">CAM-022 Termal PTZ</span>
-                                </div>
-                                <span class="text-[10px] bg-rose-600/90 text-white font-bold px-2 py-0.5 rounded">AI Alev Tespit (%98)</span>
-                            </div>
-                        </div>
-
                         <!-- Assigned Fire Station -->
                         <div class="bg-slate-900/80 p-3 rounded-xl border border-slate-800 mb-4 flex items-center justify-between text-xs">
                             <div class="flex items-center space-x-2.5">
@@ -232,27 +241,26 @@
                         </div>
                     </div>
 
-                    <!-- Action Link & Lifecycle Trigger -->
-                    <div class="space-y-2">
-                        <a href="{{ route('incidents.show', $latestCritical->id) }}" class="w-full py-3 rounded-xl bg-gradient-to-r from-rose-600 to-orange-600 hover:from-rose-500 hover:to-orange-500 text-white font-bold text-center text-sm transition shadow-lg shadow-rose-600/30 flex items-center justify-center space-x-2">
-                            <span>🔍 Olay Detayını ve Müdahaleyi Yönet</span>
-                            <span>→</span>
-                        </a>
-                    </div>
+                    <!-- Action Link -->
+                    <a href="{{ route('incidents.show', $latestCritical->id) }}" class="w-full py-3 rounded-xl bg-gradient-to-r from-rose-600 to-orange-600 hover:from-rose-500 hover:to-orange-500 text-white font-bold text-center text-sm transition shadow-lg shadow-rose-600/30 flex items-center justify-center space-x-2">
+                        <span>🔍 Olay Detayını ve Müdahaleyi Yönet</span>
+                        <span>→</span>
+                    </a>
                 </div>
             @else
-                <div class="glass-panel p-8 rounded-2xl flex-1 flex flex-col items-center justify-center text-center">
-                    <div class="w-16 h-16 rounded-2xl bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center text-3xl mb-3">
+                <div class="glass-panel p-6 rounded-2xl flex-1 flex flex-col items-center justify-center text-center">
+                    <div class="w-12 h-12 rounded-2xl bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center text-2xl mb-2">
                         🌲
                     </div>
-                    <h3 class="text-lg font-bold text-white">Tüm Sektörler Güvenli</h3>
-                    <p class="text-xs text-slate-400 mt-1 max-w-xs">Şu anda aktif bir yangın uyarısı bulunmamaktadır. Sensörler ve kameralar normal çevresel değerler raporlamaktadır.</p>
+                    <h3 class="text-base font-bold text-white">Tüm Sektörler Güvenli</h3>
+                    <p class="text-xs text-slate-400 mt-1 max-w-xs">Şu anda aktif bir yangın uyarısı bulunmamaktadır. Sensörler ve kameralar normal değerler raporlamaktadır.</p>
                     
                     <a href="{{ route('simulator') }}" class="mt-4 px-4 py-2 rounded-xl bg-amber-600 hover:bg-amber-500 text-white text-xs font-bold transition">
                         ⚡ Yangın Senaryosu Başlat
                     </a>
                 </div>
             @endif
+
         </div>
     </div>
 
@@ -286,8 +294,8 @@
                                     </span>
                                 </div>
                                 <p class="text-xs text-slate-400 mt-0.5">
-                                    <span class="font-mono text-slate-500">{{ $inc->incident_code }}</span> • 
-                                    <span>{{ $inc->zone_name }}</span> • 
+                                    <span class="font-mono text-slate-500">{{ $inc->incident_code }}</span>
+                                    <span>{{ $inc->zone_name }}</span>
                                     <span class="text-amber-400 font-medium">{{ $inc->fireStation?->name }}</span>
                                 </p>
                             </div>
@@ -320,22 +328,19 @@
                 @foreach($sensors->take(8) as $s)
                     <div class="bg-slate-900/60 p-3 rounded-xl border border-slate-800 flex items-center justify-between text-xs">
                         <div class="flex items-center space-x-2.5">
-                            <span class="w-2 h-2 rounded-full {{ $s->status->value === 'ACTIVE' ? 'bg-emerald-400 animate-pulse' : ($s->status->value === 'WARNING' ? 'bg-amber-400' : 'bg-rose-400') }}"></span>
+                            @php
+                                $statusVal = is_object($s->status ?? null) ? ($s->status->value ?? 'ACTIVE') : ($s->status ?? 'ACTIVE');
+                            @endphp
+                            <span class="w-2 h-2 rounded-full {{ $statusVal === 'ACTIVE' ? 'bg-emerald-400 animate-pulse' : ($statusVal === 'WARNING' ? 'bg-amber-400' : 'bg-rose-400') }}"></span>
                             <div>
-                                <span class="font-bold text-white block">{{ $s->sensor_code }}</span>
-                                <span class="text-[10px] text-slate-500">{{ $s->zone_name }}</span>
+                                <span class="font-bold text-white block">{{ $s->sensor_code ?? 'ESP32 Düğümü #'.$s->id }}</span>
+                                <span class="text-[10px] text-slate-500">{{ $s->zone_name ?? 'Sıcaklık: '.$s->temperature.'°C | Nem: %'.$s->humidity }}</span>
                             </div>
                         </div>
-
-                        @if($s->latestReading)
-                            <div class="flex items-center space-x-3 font-mono text-[11px]">
-                                <span class="{{ $s->latestReading->temperature > 50 ? 'text-rose-400 font-bold' : 'text-slate-300' }}">{{ number_format($s->latestReading->temperature, 1) }}°C</span>
-                                <span class="text-slate-400">%{{ number_format($s->latestReading->humidity, 0) }}</span>
-                                <span class="{{ $s->latestReading->smoke_ppm > 40 ? 'text-rose-400 font-bold' : 'text-slate-400' }}">{{ number_format($s->latestReading->smoke_ppm, 0) }} ppm</span>
-                            </div>
-                        @else
-                            <span class="text-slate-500 text-[10px]">Veri bekleniyor</span>
-                        @endif
+                        <div class="text-right">
+                            <span class="font-mono text-emerald-400 font-bold block">{{ $s->gas_level ?? 0 }} PPM</span>
+                            <span class="text-[9px] text-slate-500">{{ $s->created_at ? $s->created_at->diffForHumans() : '' }}</span>
+                        </div>
                     </div>
                 @endforeach
             </div>
@@ -355,11 +360,15 @@
             attributionControl: false
         }).setView([39.6500, 26.8500], 11);
 
-        // Dark tile layer
-        L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', {
+        // OpenStreetMap tile layer
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
             maxZoom: 19,
-            subdomains: 'abcd',
+            subdomains: 'abc'
         }).addTo(map);
+
+        setTimeout(() => {
+            map.invalidateSize();
+        }, 500);
 
         // Custom DivIcons
         const createFireIcon = (risk) => L.divIcon({
@@ -421,83 +430,53 @@
                 const { fires, sensors, cameras, stations } = json.data;
 
                 // Render Stations
-                stations.forEach(st => {
+                stations?.forEach(st => {
                     const marker = L.marker([st.latitude, st.longitude], { icon: stationIcon }).addTo(map);
                     marker.bindPopup(`
                         <div class="p-2 space-y-1">
                             <span class="text-[10px] font-bold text-amber-400 uppercase">🏢 İtfaiye Merkezi</span>
                             <h4 class="font-bold text-sm text-white">${st.name}</h4>
                             <p class="text-xs text-slate-300">Kapsama: ${st.coverage_radius_km} km | Birimler: ${st.active_units_count}</p>
-                            <p class="text-xs text-slate-400">Tel: ${st.phone || '-'}</p>
                         </div>
                     `);
-
-                    // Coverage Circle
-                    L.circle([st.latitude, st.longitude], {
-                        radius: st.coverage_radius_km * 1000,
-                        color: '#f59e0b',
-                        weight: 1,
-                        opacity: 0.25,
-                        fillColor: '#f59e0b',
-                        fillOpacity: 0.05
-                    }).addTo(map);
                 });
 
                 // Render Sensors
-                sensors.forEach(sn => {
+                sensors?.forEach(sn => {
                     const marker = L.marker([sn.latitude, sn.longitude], { icon: sensorIcon }).addTo(map);
-                    const t = sn.telemetry;
                     marker.bindPopup(`
                         <div class="p-2 space-y-1 font-mono text-xs">
                             <span class="text-[10px] font-bold text-emerald-400 uppercase">📡 Orman Sensörü</span>
                             <h4 class="font-bold text-sm text-white font-sans">${sn.name} (${sn.code})</h4>
-                            <p class="text-slate-300">Sektör: ${sn.zone_name}</p>
-                            ${t ? `
-                                <div class="grid grid-cols-2 gap-1 mt-1 pt-1 border-t border-slate-700 text-[11px]">
-                                    <span class="text-rose-400">Sıcaklık: ${t.temperature}°C</span>
-                                    <span class="text-cyan-400">Nem: %${t.humidity}</span>
-                                    <span class="text-orange-400">Duman: ${t.smoke_ppm} ppm</span>
-                                    <span class="text-amber-400">Gaz: ${t.co_gas_ppm} ppm</span>
-                                </div>
-                            ` : '<p class="text-slate-500">Telemetri verisi yok</p>'}
                         </div>
                     `);
                 });
 
                 // Render Cameras
-                cameras.forEach(cm => {
+                cameras?.forEach(cm => {
                     const marker = L.marker([cm.latitude, cm.longitude], { icon: cameraIcon }).addTo(map);
                     marker.bindPopup(`
                         <div class="p-2 space-y-1 text-xs">
                             <span class="text-[10px] font-bold text-cyan-400 uppercase">📷 Termal/Optik Kamera</span>
                             <h4 class="font-bold text-sm text-white">${cm.name} (${cm.code})</h4>
-                            <p class="text-slate-300">Görüş Açısı: ${cm.fov_degrees}° | Durum: ${cm.status}</p>
-                            ${cm.snapshot_url ? `<img src="${cm.snapshot_url}" class="w-full h-24 object-cover rounded mt-1">` : ''}
                         </div>
                     `);
                 });
 
-                // Render Fires (Pulsing Red)
-                fires.forEach(fr => {
+                // Render Fires
+                fires?.forEach(fr => {
                     fireLatLng = [fr.latitude, fr.longitude];
                     const marker = L.marker([fr.latitude, fr.longitude], { icon: createFireIcon(fr.risk_score) }).addTo(map);
                     marker.bindPopup(`
                         <div class="p-2 space-y-1.5">
                             <span class="text-[10px] font-bold text-rose-400 uppercase tracking-wider">🚨 KRİTİK YANGIN TESPİTİ</span>
                             <h4 class="font-bold text-sm text-white">${fr.title}</h4>
-                            <p class="text-xs text-rose-300 font-mono">Risk Skoru: %${fr.risk_score} (${fr.severity})</p>
-                            <p class="text-xs text-slate-300 font-mono">📍 ${fr.latitude}, ${fr.longitude}</p>
-                            <p class="text-xs text-amber-400">Atanan: ${fr.station_name || 'En yakın merkez'}</p>
-                            <a href="/incidents/${fr.id}" class="block mt-2 text-center py-1 rounded bg-rose-600 hover:bg-rose-500 text-white font-bold text-xs">
-                                Olayı Yönet →
-                            </a>
                         </div>
                     `);
-
-                    // Focus map automatically on fire location
                     map.setView([fr.latitude, fr.longitude], 12, { animate: true });
                 });
 
+                map.invalidateSize();
             } catch (err) {
                 console.error('Harita yükleme hatası:', err);
             }
@@ -510,11 +489,14 @@
             if (fireLatLng) {
                 map.flyTo(fireLatLng, 13, { duration: 1.5 });
             } else {
-                map.flyTo([39.7190, 26.8710], 12);
+                map.flyTo([39.6500, 26.8500], 11);
             }
         });
 
-        document.getElementById('btnRefreshMap')?.addEventListener('click', loadMapElements);
+        document.getElementById('btnRefreshMap')?.addEventListener('click', () => {
+            loadMapElements();
+            map.invalidateSize();
+        });
     });
 </script>
 @endpush

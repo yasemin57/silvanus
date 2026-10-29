@@ -8,7 +8,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Camera;
 use App\Models\FireIncident;
 use App\Models\FireStation;
-use App\Models\Sensor;
+use App\Models\SensorData; // Sensor yerine SensorData modelini ekledik
 use App\Services\Health\SystemHealthMonitorService;
 use App\Services\Incidents\IncidentLifecycleService;
 use Illuminate\Contracts\View\View;
@@ -24,13 +24,14 @@ class DashboardController extends Controller
     {
         $activeIncidents = FireIncident::query()
             ->active()
-            ->with(['fireStation', 'primarySensor.latestReading', 'primaryCamera', 'assignments.firefighter.user', 'timelines'])
+            ->with(['fireStation', 'primaryCamera', 'assignments.firefighter.user', 'timelines'])
             ->latest('detected_at')
             ->get();
 
         $latestCritical = $activeIncidents->first();
 
-        $sensors = Sensor::query()->with('latestReading')->get();
+        // Sensor yerine doğrudan ESP32 verilerini sakladığınız SensorData modelinden verileri çekiyoruz
+        $sensors = SensorData::query()->latest()->get();
         $cameras = Camera::query()->get();
         $stations = FireStation::query()->with(['firefighters.user'])->where('is_active', true)->get();
         $health = $this->healthService->getHealthSummary();
@@ -48,7 +49,7 @@ class DashboardController extends Controller
     public function incidents(): View
     {
         $incidents = FireIncident::query()
-            ->with(['fireStation', 'primarySensor', 'primaryCamera', 'timelines'])
+            ->with(['fireStation', 'primaryCamera', 'timelines'])
             ->latest('detected_at')
             ->paginate(15);
 
@@ -60,7 +61,6 @@ class DashboardController extends Controller
         $incident = FireIncident::query()
             ->with([
                 'fireStation.firefighters.user',
-                'primarySensor.readings' => fn ($q) => $q->latest('recorded_at')->limit(20),
                 'primaryCamera',
                 'assignments.firefighter.user',
                 'timelines.user',
@@ -74,7 +74,7 @@ class DashboardController extends Controller
 
     public function simulator(): View
     {
-        $sensors = Sensor::query()->get();
+        $sensors = SensorData::query()->latest()->take(10)->get();
         $cameras = Camera::query()->get();
         $stations = FireStation::query()->where('is_active', true)->get();
 
